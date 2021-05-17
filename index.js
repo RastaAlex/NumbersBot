@@ -3,6 +3,7 @@
 const TelegramApi = require('node-telegram-bot-api');
 const {gameOptions, againOptions} = require('./options');
 const sequelize = require('./db');
+const UserModel = require('./models');
 
 const token = '1845360664:AAFo6pUGPhNtktxIecLN0dIyRok5DUY8U2Y';
 
@@ -49,20 +50,24 @@ const start = async () => {
         const text = msg.text;
         const chatId = msg.chat.id;
 
-        if (text === '/start') {
-            await bot.sendSticker(chatId, 'https://telegram-stickers.github.io/public/stickers/fogsland/1.png');
-            return bot.sendMessage(chatId, 'Welcome to NumbersBot');
+        try {
+            if (text === '/start') {
+                await UserModel.create({chatId})
+                await bot.sendSticker(chatId, 'https://telegram-stickers.github.io/public/stickers/fogsland/1.png');
+                return bot.sendMessage(chatId, 'Welcome to NumbersBot');
+            }
+            if (text === '/info') {
+                const user = await UserModel.findOne({chatId});
+                return bot.sendMessage(chatId, `Your name is ${msg.from.first_name} ${msg.from.last_name} in game you have right answers ${user.right}, wrong ${user.wrong}`);
+            }
+            if (text === '/game') {
+                return startGame(chatId);
+            }
+    
+            return bot.sendMessage(chatId, 'I dont understand you, try again');
+        } catch (e) {
+           return bot.sendMessage(chatId, 'Some error'); 
         }
-
-        if (text === '/info') {
-            return bot.sendMessage(chatId, `Your name is ${msg.from.first_name} ${msg.from.last_name}`);
-        }
-
-        if (text === '/game') {
-            return startGame(chatId);
-        }
-
-        return bot.sendMessage(chatId, 'I dont understand you, try again');
     })
 
     bot.on('callback_query', async (msg) => {
@@ -71,11 +76,16 @@ const start = async () => {
         if (data === '/again') {
             return startGame(chatId);
         }
+        const user = await UserModel.findOne({chatId})
+
         if (data == chats[chatId]) {
+            user.right += 1;
             await bot.sendMessage(chatId, 'You win', againOptions);
         } else {
+            user.wrong += 1;
             await bot.sendMessage(chatId, `No, Bot choose number ${chats[chatId]}`, againOptions);
         }
+        await user.save();
     })
 }
 
