@@ -2,7 +2,7 @@
 
 const TelegramApi = require('node-telegram-bot-api');
 const {gameOptions, againOptions} = require('./options');
-const sequelize = require('./db');
+const sequelize = require('../db/db');
 const UserModel = require('./models');
 
 const token = '1845360664:AAFo6pUGPhNtktxIecLN0dIyRok5DUY8U2Y';
@@ -47,7 +47,9 @@ const start = async () => {
     ])
 
     bot.on('message', async (msg) => {
-        const text = msg.text;
+        const {
+            text
+        } = msg;
         const chatId = msg.chat.id;
 
         try {
@@ -66,12 +68,14 @@ const start = async () => {
     
             return bot.sendMessage(chatId, 'I dont understand you, try again');
         } catch (e) {
-           return bot.sendMessage(chatId, 'Some error'); 
+           return bot.sendMessage(chatId, `Some error ${e}`); 
         }
     })
 
     bot.on('callback_query', async (msg) => {
-        const data = msg.data;
+        const {
+            data
+        } = msg;
         const chatId = msg.message.chat.id;
         if (data === '/again') {
             return startGame(chatId);
@@ -79,10 +83,10 @@ const start = async () => {
         const user = await UserModel.findOne({chatId})
 
         if (data == chats[chatId]) {
-            user.right += 1;
+            ++user.right;
             await bot.sendMessage(chatId, 'You win', againOptions);
         } else {
-            user.wrong += 1;
+            ++user.wrong;
             await bot.sendMessage(chatId, `No, Bot choose number ${chats[chatId]}`, againOptions);
         }
         await user.save();

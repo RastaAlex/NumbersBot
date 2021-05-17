@@ -1,11 +1,13 @@
 {
   "name": "NumbersBot",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Telegram Bot numbers game",
+  "main": "bin/index.js",
   "scripts": {
-    "dev": "nodemon index.js",
-    "start": "node index.js"
+    "dev": "nodemon bin/index.js",
+    "start": "node bin/index.js",
+    "lint": "madrun lint",
+    "fix:lint": "madrun fix:lint"
   },
   "keywords": [],
   "author": "",
@@ -16,5 +18,10 @@
     "pg": "^8.6.0",
     "pg-hstore": "^2.3.3",
     "sequelize": "^6.6.2"
+  },
+  "devDependencies": {
+    "eslint": "^7.26.0",
+    "madrun": "^8.8.3",
+    "putout": "^17.5.0"
   }
 }
