@@ -3,7 +3,7 @@
 const {run} = require('madrun');
 
 module.exports = {
-    'lint': () => 'putout bin/index.js',
+    'lint': () => 'putout lib/index.js',
     'fix:lint': () => run('lint', '--fix'),
     'report': () => 'nyc report --reporter=text-lcov | coveralls',
     'coverage': () => 'nyc npm test',
