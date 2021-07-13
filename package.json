@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "eslint": "^7.26.0",
+    "eslint-plugin-putout": "^8.1.0",
     "madrun": "^8.8.3",
     "putout": "^17.5.0"
   }
